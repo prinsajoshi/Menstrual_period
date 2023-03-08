@@ -132,6 +132,7 @@ class _MyAppsState extends State<MyApps> {
       document.set({'Prediction Date': previousDate}, SetOptions(merge: true));
 
       if (y <= 0) {
+        NotificationAPI.stopNotification();
         y = y * -1;
         return Scaffold(
           appBar: AppBar(
@@ -320,6 +321,7 @@ class _MyAppsState extends State<MyApps> {
           body:'Your Period is near. Check the app to know more',
         );
         }
+      
         
       //   else{
       //     for(int i = 0; i<y;i++){
