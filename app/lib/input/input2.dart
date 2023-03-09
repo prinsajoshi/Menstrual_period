@@ -6,7 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:menstrual_period_tracker/auth_controller.dart';
 import 'package:menstrual_period_tracker/input/input3.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:menstrual_period_tracker/retrive/retrievedata.dart';
 import 'package:menstrual_period_tracker/service/database.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -127,7 +129,9 @@ class _DaysState extends State<Days> {
                     //     'Days' : 1
                     //    }
                     //  );
-                    createUser(_currentSliderValue.toString(), widget.email);
+                    //createUser(_currentSliderValue.toString(), widget.email);
+                    NepaliDateTime now = NepaliDateTime.now();
+                    addCycleData(widget.email, _currentSliderValue.toInt(),'${now.year}-${now.month}-${now.day}');
                     Get.to(() => Length(widget.email));
                   },
                   child: Container(

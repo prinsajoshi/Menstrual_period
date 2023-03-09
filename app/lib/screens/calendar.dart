@@ -79,7 +79,7 @@ class _CalendarState extends State<Calendar> {
               BottomNavigationBarItem(
                 icon: GestureDetector(
                   onTap: () {
-                    Get.to(() => MyApps(widget.email));
+                    Get.to(() => MyApps(widget.email,predictAgain:false));
                   },
                   child: const Icon(Icons.timer),
                 ),

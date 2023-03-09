@@ -89,16 +89,15 @@ Future<List<String>> retrievePeriodDates(String? email) async {
 }
 
 // To ckeck multiple dates without changing date of mobile
-void addPeriodDate2(String? userId, String formattedDate) {
+void addPeriodDate2(String? userId, String formattedDate,) {
   // Get the current date in the Nepali calendar
   //NepaliDateTime now = NepaliDateTime.now();
   // String formattedDate = '${now.year}-${now.month}-${now.day}';
   //NepaliDateTime now =NepaliDateTime.now();
-  String dateString = '2079-11-15';
   // Create a map with the timestamp and cycle length
   Map<String, dynamic> periodDate = {
     "Period Date": {
-      dateString: formattedDate,
+      formattedDate: formattedDate,
     },
   };
 
@@ -136,7 +135,8 @@ class RetrieveData {
   int? cycleLength;
   // int? cycle;
   String? periodDate;
-  RetrieveData(this.age, this.cycleLength, this.periodDate);
+  int? prediction;
+  RetrieveData(this.age, this.cycleLength, this.periodDate,this.prediction);
 }
 
 Future<RetrieveData?> retrieveUserData(String email) async {
@@ -151,8 +151,9 @@ Future<RetrieveData?> retrieveUserData(String email) async {
     final int cycleLength = double.parse(data['Cycle Length']).round();
     // final int cycle = double.parse(data['cycle length']).round();
     final Map<String, dynamic> periodDateMap = data['Period Date'];
+    final int prediction = data['Prediction'];
     final String periodDate = periodDateMap.values.toList().first.toString();
-    return RetrieveData(age, cycleLength, periodDate);
+    return RetrieveData(age, cycleLength, periodDate,prediction);
   } else {
     return null;
   }

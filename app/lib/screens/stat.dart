@@ -183,7 +183,7 @@ class _StatState extends State<Stat> {
             BottomNavigationBarItem(
               icon: GestureDetector(
                 onTap: () {
-                  Get.to(() => MyApps(widget.email));
+                  Get.to(() => MyApps(widget.email,predictAgain:false));
                 },
                 child: const Icon(Icons.timer),
               ),

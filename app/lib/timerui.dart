@@ -25,8 +25,9 @@ import 'loginsignup/signup.dart';
 //import 'package:nepali_date_converter/nepali_date_converter.dart';
 
 class MyApps extends StatefulWidget {
+  bool predictAgain = true;
   final String? email;
-  MyApps(this.email);
+  MyApps(this.email,{this.predictAgain = true});
 
   @override
   State<MyApps> createState() => _MyAppsState();
@@ -115,7 +116,6 @@ class _MyAppsState extends State<MyApps> {
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
-
     if (value == true) {
 
       Duration diff = _dateTime.difference(previousDate);
@@ -130,6 +130,452 @@ class _MyAppsState extends State<MyApps> {
       DocumentReference document = collection.doc(widget.email);
       document.set({'Prediction': x}, SetOptions(merge: true));
       document.set({'Prediction Date': previousDate}, SetOptions(merge: true));
+
+      if (y <= 0) {
+        if(y==0)
+        {
+          y=-1;
+        }
+        else if (y==-5)
+        {
+          NepaliDateTime now = NepaliDateTime.now();
+          now = now.add(Duration(days: y));
+          addPeriodDate2(widget.email, '${now.year}-${now.month}-${now.day}');
+        }
+        
+        y = y * -1;
+        NotificationAPI.stopNotification();
+        return  Scaffold(
+            appBar: AppBar(
+              title: Text(
+                "टाइमर",
+                style: GoogleFonts.getFont(
+                  'Khand',
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 253, 250, 250),
+                ),
+              ),
+              backgroundColor: Color.fromARGB(255, 66, 13, 106),
+              toolbarHeight: 80,
+              centerTitle: true,
+              automaticallyImplyLeading: false,
+            ),
+            body: Stack(
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      width: w * 0.7,
+                      height: h * 0.4,
+                      child: Column(
+                        //  mainAxisAlignment: MainAxisAlignment.center,
+                        children: [SizedBox(
+                          width: w,
+                          height: h*0.01,
+                        ),
+                          Center(
+                            child: Center(
+                              child: CircleAvatar(
+                        backgroundColor: Color.fromARGB(255, 154, 58, 58),
+                        radius: 150,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                              child: Text(
+                                "महिनावारी ",
+                                style: GoogleFonts.getFont(
+                                  'Khand',
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 5, 5, 5),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: h * 0.03,
+                              width: w,
+                            ),
+                            Text(
+                              y.toString(),
+                              style: TextStyle(fontSize: 32, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: h * 0.10,
+                      width: w,
+                    ),
+                    // SizedBox(
+                    //   height: h * 0.06,
+                    //   width: w,
+                    // ),
+                    FutureBuilder<RetrieveData?>(
+                        future: retrieveUserData(widget.email!),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final user = snapshot.data!;
+                            return Container(
+                              width: w * 0.7,
+                              height: h * 0.2,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'महिनावारीको मिति परिवर्तन गर्न',
+                                    style: GoogleFonts.getFont(
+                                      'Khand',
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 5, 5, 5),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: h * 0.03,
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Color.fromRGBO(39, 3, 27, 0.686),
+                                    ),
+                                    onPressed: () async {
+                                      //    RetrieveData? x =
+                                      await retrieveUserData(widget.email!);
+                                      //  print(x?.age);
+        
+                                      //String Datevalues = retrievePeriodDates(widget.email).toString();
+                                      // final String periodDate =
+                                      //     await retrievePeriodDates2(widget.email);
+                                      uilength(widget.email);
+                                      // print(periodDate);
+                                      //_showdatepicker(periodDate);
+                                      //retrievePeriodDates(widget.email);
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        "मिति छान्नु होस्",
+                                        style: GoogleFonts.getFont(
+                                          'Khand',
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Color.fromARGB(255, 253, 250, 250),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return Text("Loading Data");
+                          }
+                        }),
+                  ],
+                ),
+              ],
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              backgroundColor:
+                  Color.fromARGB(255, 66, 13, 106), // set background color
+              type: BottomNavigationBarType.fixed, // set type to fixed
+              selectedItemColor: Colors.white, // set selected item color
+              unselectedItemColor: Colors.grey[400], // set unselected item color
+              iconSize: 30, // set icon sizeincrease the size of the icons
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: GestureDetector(
+                    onTap: () {
+                      Get.to(() => MyApps(widget.email));
+                    },
+                    child: const Icon(Icons.timer),
+                  ),
+                  label: '',
+                  backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+                ),
+                BottomNavigationBarItem(
+                  icon: GestureDetector(
+                    onTap: () {
+                      Get.to(() => Calendar(widget.email));
+                    },
+                    child: const Icon(Icons.calendar_month),
+                  ),
+                  label: '',
+                  backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+                ),
+                BottomNavigationBarItem(
+                  icon: GestureDetector(
+                    onTap: () {
+                      Get.to(() => MyHomePage(widget.email));
+                    },
+                    child: const Icon(Icons.girl_sharp),
+                  ),
+                  label: '',
+                  backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+                ),
+                BottomNavigationBarItem(
+                  icon: GestureDetector(
+                    onTap: () {
+                      Get.to(() => Stat(widget.email));
+                    },
+                    child: const Icon(Icons.auto_graph),
+                  ),
+                  label: '',
+                  backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+                ),
+                BottomNavigationBarItem(
+                  icon: GestureDetector(
+                    onTap: () {
+                      Get.to(() => Content(widget.email));
+                    },
+                    child: const Icon(Icons.content_copy),
+                  ),
+                  label: '',
+                  backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+                ),
+              ],
+            ),
+          );
+      } else {
+        
+        //NotificationAPI.stopNotification();
+      
+        if(y<=5){
+          NotificationAPI.showScheduledNotification(
+          title:'Period Tracker',
+          body:'Your Period is near. Check the app to know more',
+        );
+        }
+      
+        
+      //   else{
+      //     for(int i = 0; i<y;i++){
+      //     NotificationAPI.showScheduledNotification(
+      //     title:'Period Tracker',
+      //     body:'Your Period is in ${(y-i).toString()} days',
+      //     scheduledDate: DateTime.now().add(Duration(days: y-i))
+      //   );
+      //     }}
+      //  NotificationAPI.showNotification(
+      //    body: "test",
+      //    title: 'test ${y.toString()}',
+      //    payload: 'test',
+      //  );
+       
+        
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "टाइमर",
+              style: GoogleFonts.getFont(
+                'Khand',
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 253, 250, 250),
+              ),
+            ),
+            backgroundColor: Color.fromARGB(255, 66, 13, 106),
+            toolbarHeight: 80,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+          ),
+          body: Stack(
+            children: [
+              Column(
+                children: [
+                  SizedBox(
+                    height: h* 0.5,
+                    child: CircleAvatar(
+                      backgroundColor: Color.fromARGB(255, 154, 58, 58),
+                      radius: 150,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                            child: Text(
+                              "महिनावारी आउन बाँकी दिन",
+                              style: GoogleFonts.getFont(
+                                'Khand',
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 5, 5, 5),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: h * 0.03,
+                            width: w,
+                          ),
+                          Text(
+                            y.toString(),
+                            style: TextStyle(fontSize: 32, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // SizedBox(
+                  //   height: h * 0.10,
+                  //   width: w,
+                  // ),
+                  // SizedBox(
+                  //   height: h * 0.06,
+                  //   width: w,
+                  // ),
+                  FutureBuilder<RetrieveData?>(
+                      future: retrieveUserData(widget.email!),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final user = snapshot.data!;
+                          return Center(
+                            child: Container(
+                              width: w * 0.7,
+                              height: h * 0.2,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'महिनावारीको मिति परिवर्तन गर्न',
+                                    style: GoogleFonts.getFont(
+                                      'Khand',
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 5, 5, 5),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: h * 0.03,
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Color.fromRGBO(39, 3, 27, 0.686),
+                                    ),
+                                    onPressed: () async {
+                                      //    RetrieveData? x =
+                                      // await retrieveUserData(widget.email!);
+                                      //  print(x?.age);
+                          
+                                      //String Datevalues = retrievePeriodDates(widget.email).toString();
+                                      final String periodDate =
+                                          await retrievePeriodDates2(
+                                              widget.email);
+                                      uilength(widget.email);
+                                      // print(periodDate);
+                                      _showdatepicker(periodDate);
+                                      //retrievePeriodDates(widget.email);
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        "मिति छान्नु होस्",
+                                        style: GoogleFonts.getFont(
+                                          'Khand',
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Color.fromARGB(255, 253, 250, 250),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Text("Loading Data");
+                        }
+                      }),
+                ],
+              ),
+            ],
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor:
+                Color.fromARGB(255, 66, 13, 106), // set background color
+            type: BottomNavigationBarType.fixed, // set type to fixed
+            selectedItemColor: Colors.white, // set selected item color
+            unselectedItemColor: Colors.grey[400], // set unselected item color
+            iconSize: 30, // set icon sizeincrease the size of the icons
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: GestureDetector(
+                  onTap: () {
+                    Get.to(() => MyApps(widget.email));
+                  },
+                  child: const Icon(Icons.timer),
+                ),
+                label: '',
+                backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+              ),
+              BottomNavigationBarItem(
+                icon: GestureDetector(
+                  onTap: () {
+                    Get.to(() => Calendar(widget.email));
+                  },
+                  child: const Icon(Icons.calendar_month),
+                ),
+                label: '',
+                backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+              ),
+              BottomNavigationBarItem(
+                icon: GestureDetector(
+                  onTap: () {
+                    Get.to(() => MyHomePage(widget.email));
+                  },
+                  child: const Icon(Icons.girl_sharp),
+                ),
+                label: '',
+                backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+              ),
+              BottomNavigationBarItem(
+                icon: GestureDetector(
+                  onTap: () {
+                    Get.to(() => Stat(widget.email));
+                  },
+                  child: const Icon(Icons.auto_graph),
+                ),
+                label: '',
+                backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+              ),
+              BottomNavigationBarItem(
+                icon: GestureDetector(
+                  onTap: () {
+                    Get.to(() => Content(widget.email));
+                  },
+                  child: const Icon(Icons.content_copy),
+                ),
+                label: '',
+                backgroundColor: const Color.fromARGB(255, 66, 13, 106),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    else if(widget.predictAgain==false) 
+    {
+      return FutureBuilder<RetrieveData?>(
+        future: retrieveUserData(widget.email!),
+        builder: (context, snapshot) {
+      if(snapshot.hasData)
+      {
+        final test = snapshot.data!;
+        result = test.prediction.toString();
+           Duration diff = _dateTime.difference(previousDate);
+      int d = diff.inDays;
+
+      int x = int.parse(result!);
+      int y = x - d;
 
       if (y <= 0) {
         NotificationAPI.stopNotification();
@@ -358,89 +804,104 @@ class _MyAppsState extends State<MyApps> {
             children: [
               Column(
                 children: [
-                  Container(
-                    width: w * 0.7,
-                    height: h * 0.4,
-                    child: Column(
-                      //  mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Center(
-                            child: CircleAvatar(
-                              backgroundColor: Color.fromARGB(255, 12, 12, 12),
-                              radius: 155,
-                              // child:
-                              child: Text(y.toString()),
-                            ), //CircleAvatar
+                  SizedBox(
+                    height: h* 0.5,
+                    child: CircleAvatar(
+                      backgroundColor: Color.fromARGB(255, 154, 58, 58),
+                      radius: 150,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                            child: Text(
+                              "महिनावारी आउन बाँकी दिन",
+                              style: GoogleFonts.getFont(
+                                'Khand',
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 5, 5, 5),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            height: h * 0.03,
+                            width: w,
+                          ),
+                          Text(
+                            y.toString(),
+                            style: TextStyle(fontSize: 32, color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: h * 0.10,
-                    width: w,
-                  ),
-                  SizedBox(
-                    height: h * 0.06,
-                    width: w,
-                  ),
+                  // SizedBox(
+                  //   height: h * 0.10,
+                  //   width: w,
+                  // ),
+                  // SizedBox(
+                  //   height: h * 0.06,
+                  //   width: w,
+                  // ),
                   FutureBuilder<RetrieveData?>(
                       future: retrieveUserData(widget.email!),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final user = snapshot.data!;
-                          return Container(
-                            width: w * 0.7,
-                            height: h * 0.2,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'महिनावारीको मिति परिवर्तन गर्न',
-                                  style: GoogleFonts.getFont(
-                                    'Khand',
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 5, 5, 5),
+                          return Center(
+                            child: Container(
+                              width: w * 0.7,
+                              height: h * 0.2,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'महिनावारीको मिति परिवर्तन गर्न',
+                                    style: GoogleFonts.getFont(
+                                      'Khand',
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 5, 5, 5),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: h * 0.03,
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromRGBO(39, 3, 27, 0.686),
+                                  SizedBox(
+                                    height: h * 0.03,
                                   ),
-                                  onPressed: () async {
-                                    //    RetrieveData? x =
-                                    // await retrieveUserData(widget.email!);
-                                    //  print(x?.age);
-
-                                    //String Datevalues = retrievePeriodDates(widget.email).toString();
-                                    final String periodDate =
-                                        await retrievePeriodDates2(
-                                            widget.email);
-                                    uilength(widget.email);
-                                    // print(periodDate);
-                                    _showdatepicker(periodDate);
-                                    //retrievePeriodDates(widget.email);
-                                  },
-                                  child: Center(
-                                    child: Text(
-                                      "मिति छान्नु होस्",
-                                      style: GoogleFonts.getFont(
-                                        'Khand',
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                        color:
-                                            Color.fromARGB(255, 253, 250, 250),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Color.fromRGBO(39, 3, 27, 0.686),
+                                    ),
+                                    onPressed: () async {
+                                      //    RetrieveData? x =
+                                      // await retrieveUserData(widget.email!);
+                                      //  print(x?.age);
+                          
+                                      //String Datevalues = retrievePeriodDates(widget.email).toString();
+                                      final String periodDate =
+                                          await retrievePeriodDates2(
+                                              widget.email);
+                                      uilength(widget.email);
+                                      // print(periodDate);
+                                      _showdatepicker(periodDate);
+                                      //retrievePeriodDates(widget.email);
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        "मिति छान्नु होस्",
+                                        style: GoogleFonts.getFont(
+                                          'Khand',
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Color.fromARGB(255, 253, 250, 250),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         } else {
@@ -513,7 +974,13 @@ class _MyAppsState extends State<MyApps> {
           ),
         );
       }
-    } else {
+      }
+      else{
+        return Text("");
+      }
+    });
+    }
+    else {
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -558,8 +1025,12 @@ class _MyAppsState extends State<MyApps> {
 
                         String N = DateFormat('yyyy-MM-dd').format(previous);
                         //      print(previousDate);
-
-                        makeForecast();
+                        if(widget.predictAgain){
+                          makeForecast();
+                        }else
+                        {
+                          result = user.prediction.toString();
+                        }
 
                         return Container(
                           width: w * 0.7,
